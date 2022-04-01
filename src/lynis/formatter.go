@@ -34,7 +34,7 @@ type FormatJSON struct {
 	next OutputFormatter
 }
 
-func (pj *FormatJSON) Format(report *Report,
+func (fj *FormatJSON) Format(report *Report,
 	data []byte, err error) (*Report, []byte, error) {
 	if err != nil {
 		return nil, nil, err
@@ -55,26 +55,26 @@ func (pj *FormatJSON) Format(report *Report,
                 data = buf.Bytes()
 	}
 
-	if pj.Next() != nil {
-		return pj.Next().Format(report, data, nil)
+	if fj.Next() != nil {
+		return fj.Next().Format(report, data, nil)
 	} else {
 		return report, data, nil
 	}
 }
 
-func (pj *FormatJSON) Next() OutputFormatter {
-	return pj.next
+func (fj *FormatJSON) Next() OutputFormatter {
+	return fj.next
 }
 
-func (pj *FormatJSON) SetNext(next OutputFormatter) {
-	pj.next = next
+func (fj *FormatJSON) SetNext(next OutputFormatter) {
+	fj.next = next
 }
 
 type FormatTimestamp struct {
 	next OutputFormatter
 }
 
-func (pj *FormatTimestamp) Format(report *Report, data []byte, err error) (*Report, []byte, error) {
+func (ft *FormatTimestamp) Format(report *Report, data []byte, err error) (*Report, []byte, error) {
 	if err != nil {
 		return nil, nil, err
 	}
@@ -88,26 +88,26 @@ func (pj *FormatTimestamp) Format(report *Report, data []byte, err error) (*Repo
                 data = buf.Bytes()
 	}
 
-	if pj.Next() != nil {
-		return pj.Next().Format(report, data, nil)
+	if ft.Next() != nil {
+		return ft.Next().Format(report, data, nil)
 	} else {
 		return report, data, nil
 	}
 }
 
-func (pj *FormatTimestamp) Next() OutputFormatter {
-	return pj.next
+func (ft *FormatTimestamp) Next() OutputFormatter {
+	return ft.next
 }
 
-func (pj *FormatTimestamp) SetNext(next OutputFormatter) {
-	pj.next = next
+func (ft *FormatTimestamp) SetNext(next OutputFormatter) {
+	ft.next = next
 }
 
 type FormatNewLine struct {
 	next OutputFormatter
 }
 
-func (pj *FormatNewLine) Format(report *Report,
+func (fnl *FormatNewLine) Format(report *Report,
 	data []byte, err error) (*Report, []byte, error) {
 	if err != nil {
 		return nil, nil, err
@@ -119,17 +119,17 @@ func (pj *FormatNewLine) Format(report *Report,
                 data = append(data, []byte{'\n'}...)
 	}
 
-	if pj.Next() != nil {
-		return pj.Next().Format(report, data, nil)
+	if fnl.Next() != nil {
+		return fnl.Next().Format(report, data, nil)
 	} else {
 		return report, data, nil
 	}
 }
 
-func (pj *FormatNewLine) Next() OutputFormatter {
-	return pj.next
+func (fnl *FormatNewLine) Next() OutputFormatter {
+	return fnl.next
 }
 
-func (pj *FormatNewLine) SetNext(next OutputFormatter) {
-	pj.next = next
+func (fnl *FormatNewLine) SetNext(next OutputFormatter) {
+	fnl.next = next
 }
