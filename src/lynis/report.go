@@ -28,8 +28,8 @@ const (
 
 type Report struct {
 	LynisVersion  string           `json:"lynisVersion"`
-	DateTimeStart string           `json:"DateTimeStart"`
-	DateTimeEnd   string           `json:"DateTimeEnd"`
+	DateTimeStart string           `json:"dateTimeStart"`
+	DateTimeEnd   string           `json:"dateTimeEnd"`
 	Tests         map[string]*Test `json:"tests"`
 	nonline       *regexp.Regexp
 }
@@ -39,7 +39,6 @@ func NewReport() *Report {
 		Tests:   make(map[string]*Test),
 		nonline: regexp.MustCompile(REPORT_NON_LINE_REG),
 	}
-
 }
 
 func CreateReport(input io.Reader) (*Report, error) {
