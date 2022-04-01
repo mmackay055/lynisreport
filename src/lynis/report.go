@@ -100,14 +100,13 @@ func (r *Report) Add(key, value string) error {
 	var err error
 	switch key {
 	case KEY_LYNISVER:
-                if err := CheckVersion(value); err != nil {
-                        return err
+                if err := CheckVersion(value); err == nil {
+                        r.LynisVersion = value
                 }
-                r.LynisVersion = value
 	case KEY_WARNING:
-		_, err = r.parseTestValues(value, &Warning{}, AddWarning)
+		_, err = r.parseTestValues(value, AddWarning)
 	case KEY_SUGGESTION:
-		_, err = r.parseTestValues(value, &Suggestion{}, AddSuggestion)
+		_, err = r.parseTestValues(value, AddSuggestion)
 	case KEY_REPORT_DATETIME_START:
 		r.DateTimeStart = value
 	case KEY_REPORT_DATETIME_END:
@@ -129,7 +128,7 @@ func (r *Report) AddTest(name string) *Test {
 	return test
 }
 
-func (r *Report) parseTestValues(value string, te TestElement, add func(*Test, TestElement)) (*Test, error) {
+func (r *Report) parseTestValues(value string, add func(*Test, *TestElement)) (*Test, error) {
 	values := strings.Split(value, "|")
 	values = values[:len(values)-1] // remove last element which is blank
 
@@ -138,7 +137,8 @@ func (r *Report) parseTestValues(value string, te TestElement, add func(*Test, T
 	}
 
 	// set the fields of the TestElement
-	if err := SetFields(values[1:], te); err != nil {
+        te, err := NewTestElement(values[1:])
+        if err != nil {
 		return nil, err
 	}
 
