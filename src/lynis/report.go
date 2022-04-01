@@ -136,7 +136,7 @@ func (r *Report) Process(input io.Reader) error {
 		}
 
 		if err := r.ProcessLine(line); err != nil {
-                        return errors.New(fmt.Sprintf("line %d: %d", i, err))
+                        return errors.New(fmt.Sprintf("line %d: %s", i, err))
 		}
 
 		if readerr == io.EOF {
