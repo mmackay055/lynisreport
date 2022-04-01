@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -99,21 +100,25 @@ func (r *Report) Add(key, value string) error {
 	var err error
 	switch key {
 	case KEY_LYNISVER:
-                if err := CheckVersion(value); err == nil {
-                        r.LynisVersion = value
-                }
+                err = CheckVersion(value)
+                r.LynisVersion = value
 	case KEY_WARNING:
 		_, err = r.parseTestValues(value, AddWarning)
 	case KEY_SUGGESTION:
 		_, err = r.parseTestValues(value, AddSuggestion)
 	case KEY_REPORT_DATETIME_START:
-		r.DateTimeStart = value
+		r.DateTimeStart, err = FormatTime(value)
 	case KEY_REPORT_DATETIME_END:
-		r.DateTimeEnd = value
+		r.DateTimeEnd, err = FormatTime(value)
 	default:
 		return nil
 	}
 	return err
+}
+
+func FormatTime(timestr string) (string, error) {
+        timefmt, err := time.Parse("2006-01-02 15:04:05", timestr)
+        return timefmt.Format("2006-01-02T15:04:05"), err
 }
 
 func (r *Report) AddTest(name string) *Test {
