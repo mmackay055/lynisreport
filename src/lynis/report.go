@@ -6,6 +6,7 @@ import (
 	"io"
 	"regexp"
 	"strings"
+        "fmt"
 )
 
 const (
@@ -128,14 +129,14 @@ func (r *Report) Process(input io.Reader) error {
 	bufinput := bufio.NewReader(input)
 
 	// process all lines in file
-	for {
+        for i := 1;;i++ {
 		line, readerr := bufinput.ReadString('\n')
 		if readerr != nil && readerr != io.EOF {
 			return readerr
 		}
 
 		if err := r.ProcessLine(line); err != nil {
-			return err
+                        return errors.New(fmt.Sprintf("line %d: %d", i, err))
 		}
 
 		if readerr == io.EOF {
