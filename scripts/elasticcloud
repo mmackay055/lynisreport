@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Script for running the Lynis auditing tool and logging the report warnings
+# and suggestions to a log file that can be parsed by Elastic Cloud
+
+# check if root
+if [ `id -u` -ne 0 ] 
+then
+        # return error message
+        >&2 echo "error: required to run as root"
+        exit 1
+fi
+
+# Script Options
+LYNIS="$1"
+LYNISREPORTTOOL="$2"
+LYNISREPORT="/var/log/lynis-report.dat"
+ELASTICLOG="/var/log/elastic-lynis.log"
+
+
+# run Lynis
+$LYNIS -q --cronjob --report-file $LYNISREPORT audit system 
+if [ "$?" -ne "0" ]
+then
+        >&2 echo "error: Lynis completed with errors"
+        exit 1
+fi
+
+# run parsing tool
+$LYNISREPORTTOOL -r $LYNISREPORT -l $ELASTICLOG -jtn
+if [ "$?" -ne "0" ]
+then
+        >&2 echo "error: lynisreport completed with errors"
+        exit 1
+fi
