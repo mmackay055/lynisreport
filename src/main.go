@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
-	flag "github.com/spf13/pflag"
+	"io/fs"
 	"lynisreport/lynis"
 	"os"
+
+	flag "github.com/spf13/pflag"
 )
 
 // Options
@@ -21,6 +23,10 @@ const (
 	ERR_PROCCESS   int = 4
         ERR_WRITELOG   int = 5
         ERR_INVALIDOPT int = 6
+)
+
+const (
+        LOGFILE_PERM int = 0640
 )
 
 func init() {
@@ -99,7 +105,7 @@ func main() {
 		output = os.Stdout
 	} else {
 		var err error
-		output, err = os.OpenFile(logOpt, os.O_RDWR|os.O_CREATE, 0700)
+		output, err = os.OpenFile(logOpt, os.O_APPEND|os.O_CREATE|os.O_WRONLY, fs.FileMode(LOGFILE_PERM))
 		if err != nil {
 			fmt.Fprintf(os.Stderr,"error: failed to open log file %s\n",
 				logOpt)
