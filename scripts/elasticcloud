@@ -11,6 +11,8 @@ then
         exit 1
 fi
 
+# TODO add command line options for script
+
 # Script Options
 LYNIS="$1"
 LYNISREPORTTOOL="$2"
