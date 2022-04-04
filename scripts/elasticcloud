@@ -29,7 +29,7 @@ then
 fi
 
 # run parsing tool
-$LYNISREPORTTOOL -r $LYNISREPORT -l $ELASTICLOG -jtn
+$LYNISREPORTTOOL -r $LYNISREPORT -l $ELASTICLOG -jn
 if [ "$?" -ne "0" ]
 then
         >&2 echo "error: lynisreport completed with errors"
