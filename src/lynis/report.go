@@ -117,8 +117,14 @@ func (r *Report) Add(key, value string) error {
 }
 
 func FormatTime(timestr string) (string, error) {
-        timefmt, err := time.Parse("2006-01-02 15:04:05", timestr)
-        return timefmt.Format("2006-01-02T15:04:05"), err
+        // get current time
+        now := time.Now()
+
+        // add time zone info to date string
+        timefmt, err := time.Parse("2006-01-02 15:04:05-0700", timestr + now.Format("-0700"))
+
+        // return formatted time
+        return timefmt.Format("2006-01-02T15:04:05-0700"), err
 }
 
 func (r *Report) AddTest(name string) *Test {
