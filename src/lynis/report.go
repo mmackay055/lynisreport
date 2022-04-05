@@ -29,8 +29,8 @@ const (
 
 type Report struct {
 	LynisVersion  string           `json:"lynisVersion"`
-	DateTimeStart string           `json:"dTStart"`
-	DateTimeEnd   string           `json:"dTEnd"`
+	DateTimeStart string           `json:"date_time_start"`
+	DateTimeEnd   string           `json:"date_time_end"`
 	Tests         map[string]*Test `json:"tests"`
 	nonline       *regexp.Regexp
 }
