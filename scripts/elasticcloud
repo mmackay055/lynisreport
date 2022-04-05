@@ -17,7 +17,7 @@ fi
 LYNIS="$1"
 LYNISREPORTTOOL="$2"
 LYNISREPORT="/var/log/lynis-report.dat"
-ELASTICLOG="/var/log/elastic-lynis.log"
+ELASTICLOG="/var/log/lynis-report-elastic.log"
 
 
 # run Lynis
