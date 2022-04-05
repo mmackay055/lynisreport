@@ -1,7 +1,7 @@
 package lynis
 
 type Test struct {
-	Name        string         `json:"name"`
+	Name        string         `json:"test_name"`
 	Warnings    []*TestElement `json:"warnings"`
 	Suggestions []*TestElement `json:"suggestions"`
 }
