@@ -1,14 +1,14 @@
 package lynis
 
 type Test struct {
-	name        string 
+	Name        string         `json:"name"`
 	Warnings    []*TestElement `json:"warnings"`
 	Suggestions []*TestElement `json:"suggestions"`
 }
 
 func NewTest(name string) *Test {
 	return &Test{
-		name:        name,
+		Name:        name,
 		Warnings:    make([]*TestElement, 0),
 		Suggestions: make([]*TestElement, 0),
 	}
