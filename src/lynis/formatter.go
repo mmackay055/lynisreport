@@ -70,6 +70,47 @@ func (fj *FormatJSON) SetNext(next OutputFormatter) {
 	fj.next = next
 }
 
+type FormatElasticJSON struct {
+	next OutputFormatter
+}
+
+func (fj *FormatElasticJSON) Format(report *Report,
+	data []byte, err error) (*Report, []byte, error) {
+	if err != nil {
+		return nil, nil, err
+	}
+
+	newdata, err := report.SerializeTestElementElastics()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if data == nil {
+		data = newdata
+	} else {
+                // add space between data
+                buf := bytes.NewBuffer(data)
+                buf.WriteRune(' ')
+                buf.Write(newdata)
+                data = buf.Bytes()
+	}
+
+	if fj.Next() != nil {
+		return fj.Next().Format(report, data, nil)
+	} else {
+		return report, data, nil
+	}
+}
+
+func (fj *FormatElasticJSON) Next() OutputFormatter {
+	return fj.next
+}
+
+func (fj *FormatElasticJSON) SetNext(next OutputFormatter) {
+	fj.next = next
+}
+
+
 type FormatTimestamp struct {
 	next OutputFormatter
 }

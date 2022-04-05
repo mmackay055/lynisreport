@@ -2,25 +2,26 @@ package main
 
 import (
 	"fmt"
+	flag "github.com/spf13/pflag"
 	"lynisreport/lynis"
 	"os"
-	flag "github.com/spf13/pflag"
 )
 
 // Options
 var repOpt string // option for report location
 var logOpt string // option for log location
 var fmtTimestampOpt bool
-var fmtJsonOpt bool // option to output data as json
-var fmtYamlOpt bool // option to output data as yaml
+var fmtJsonOpt bool    // option to output data as json
+var fmtYamlOpt bool    // option to output data as yaml
 var fmtNewLineOpt bool // option to append newline at end of output
+var fmtElasticOpt bool // option to output test info compatible to be ingetsted by Elasticsearch
 
 const (
 	ERR_REPORTFILE int = 2
 	ERR_LOGFILE    int = 3
 	ERR_PROCCESS   int = 4
-        ERR_WRITELOG   int = 5
-        ERR_INVALIDOPT int = 6
+	ERR_WRITELOG   int = 5
+	ERR_INVALIDOPT int = 6
 )
 
 func init() {
@@ -34,50 +35,57 @@ func init() {
 		"l",
 		"",
 		"Specify where to log output of report. Default is to standard output")
-        flag.BoolVarP(&fmtTimestampOpt,
-                "timestamp",
-                "t",
-                false,
-                "Prepend timestamp info before data output")
-        flag.BoolVarP(&fmtJsonOpt,
-                "json",
-                "j",
-                true,
-                "Output data in json(default output)")
-        flag.BoolVarP(&fmtYamlOpt,
-                "yaml",
-                "y",
-                false,
-                "Output data in yaml(not yet implemented)")
-        flag.BoolVarP(&fmtNewLineOpt,
-                "newline",
-                "n",
-                false,
-                "Append new line character to end of output")
+	flag.BoolVarP(&fmtTimestampOpt,
+		"timestamp",
+		"t",
+		false,
+		"Prepend timestamp info before data output")
+	flag.BoolVarP(&fmtJsonOpt,
+		"json",
+		"j",
+		true,
+		"Output data in json(default output)")
+	flag.BoolVarP(&fmtYamlOpt,
+		"yaml",
+		"y",
+		false,
+		"Output data in yaml(not yet implemented)")
+	flag.BoolVarP(&fmtNewLineOpt,
+		"newline",
+		"n",
+		false,
+		"Append new line character to end of output")
+	flag.BoolVarP(&fmtElasticOpt,
+		"elastic",
+		"e",
+		false,
+		"Output test data in multiple JSON objects to be ingested into Elasticsearch")
 }
 
 func main() {
 	// Parse command line args
 	flag.Parse()
 
-        // set data formatters
-        var formatter lynis.OutputFormatter
-        if fmtYamlOpt {
-                fmt.Fprintf(os.Stderr, "error: yaml output is not yet implemented\n")
-                os.Exit(ERR_INVALIDOPT)
-        } else {
-                formatter = &lynis.FormatJSON{}
-        }
+	// set data formatters
+	var formatter lynis.OutputFormatter
+	if fmtYamlOpt {
+		fmt.Fprintf(os.Stderr, "error: yaml output is not yet implemented\n")
+		os.Exit(ERR_INVALIDOPT)
+	} else if fmtElasticOpt {
+		formatter = &lynis.FormatElasticJSON{}
+	} else {
+		formatter = &lynis.FormatJSON{}
+	}
 
-        // add optional timestamp
-        if fmtTimestampOpt {
-                lynis.SetNext(formatter, &lynis.FormatTimestamp{})
-        }
+	// add optional timestamp
+	if fmtTimestampOpt {
+		lynis.SetNext(formatter, &lynis.FormatTimestamp{})
+	}
 
-        // add new line to end of output
-        if fmtNewLineOpt {
-                lynis.SetNext(formatter,&lynis.FormatNewLine{})
-        }
+	// add new line to end of output
+	if fmtNewLineOpt {
+		lynis.SetNext(formatter, &lynis.FormatNewLine{})
+	}
 
 	// open report file
 	var input *os.File
@@ -87,8 +95,8 @@ func main() {
 		var err error
 		input, err = os.Open(repOpt)
 		if err != nil {
-			fmt.Fprintf(os.Stderr,"error: %s\n",
-                                err)
+			fmt.Fprintf(os.Stderr, "error: %s\n",
+				err)
 			os.Exit(ERR_REPORTFILE)
 		}
 	}
@@ -101,7 +109,7 @@ func main() {
 		var err error
 		output, err = os.OpenFile(logOpt, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0640)
 		if err != nil {
-			fmt.Fprintf(os.Stderr,"error: failed to open log file %s\n",
+			fmt.Fprintf(os.Stderr, "error: failed to open log file %s\n",
 				logOpt)
 			os.Exit(ERR_LOGFILE)
 		}
@@ -109,13 +117,13 @@ func main() {
 
 	_, data, err := lynis.Process(input, formatter)
 	if err != nil {
-                //TODO log error message to log file
-		fmt.Fprintf(os.Stderr,"error: failed to parse Lynis Report %s\n", err)
+		//TODO log error message to log file
+		fmt.Fprintf(os.Stderr, "error: failed to parse Lynis Report %s\n", err)
 		os.Exit(ERR_PROCCESS)
 	}
 
-        if bytes, err := output.Write(data); err != nil {
-                fmt.Fprintf(os.Stderr,"error: failed writting report to log file. Wrote %d bytes expected %d. %s\n", bytes, len(data), err.Error())
-                os.Exit(ERR_WRITELOG)
-        }
+	if bytes, err := output.Write(data); err != nil {
+		fmt.Fprintf(os.Stderr, "error: failed writting report to log file. Wrote %d bytes expected %d. %s\n", bytes, len(data), err.Error())
+		os.Exit(ERR_WRITELOG)
+	}
 }

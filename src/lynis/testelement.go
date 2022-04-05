@@ -26,3 +26,28 @@ func NewTestElement(values []string) (*TestElement, error) {
 
 	return &TestElement{values[0], values[1], values[2]}, nil
 }
+
+type TestElementElastic struct {
+        Name string `json:"name"`
+	Type          string `json:"type"`
+	LynisVersion  string `json:"lynisVersion"`
+	DateTimeStart string `json:"datetime_start"`
+	DateTimeEnd   string `json:"datetime_end"`
+	Message       string `json:"message"`
+	Details       string `json:"details"`
+	Solution      string `json:"solution"`
+}
+
+// used to create a flattened object to ingest into Elasiticsearch
+func CreateTestElementElastic(typ string, r *Report, t *Test, te *TestElement) (*TestElementElastic, error) {
+        return &TestElementElastic{ 
+                Name:t.Name,
+                Type: typ,
+                LynisVersion: r.LynisVersion,
+                DateTimeStart: r.DateTimeStart,
+                DateTimeEnd: r.DateTimeEnd,
+                Message: te.Message,
+                Details: te.Details,
+                Solution: te.Solution,
+        }, nil
+}

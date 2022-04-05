@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+        "encoding/json"
 )
 
 const (
@@ -29,8 +30,8 @@ const (
 
 type Report struct {
 	LynisVersion  string           `json:"lynisVersion"`
-	DateTimeStart string           `json:"date_time_start"`
-	DateTimeEnd   string           `json:"date_time_end"`
+	DateTimeStart string           `json:"datetime_start"`
+	DateTimeEnd   string           `json:"datetime_end"`
 	Tests         map[string]*Test `json:"tests"`
 	nonline       *regexp.Regexp
 }
@@ -114,6 +115,25 @@ func (r *Report) Add(key, value string) error {
 		return nil
 	}
 	return err
+}
+
+func (r *Report) SerializeTestElementElastics() ([]byte, error) {
+        tees := make([]byte,0)
+
+        for _, t := range r.Tests {
+                for _, te := range t.CreateTestElementElastics(r) {
+
+                        data, err := json.Marshal(te)
+                        if err != nil {
+                                return nil, err
+                        }
+
+                        tees = append(tees, data...)
+                        tees = append(tees, '\n')
+                }
+        }
+
+        return tees, nil
 }
 
 func FormatTime(timestr string) (string, error) {
