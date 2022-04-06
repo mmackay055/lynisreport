@@ -252,14 +252,13 @@ func (r *Report) parseTestValues(value string,
 
 // Parses key value pair from Lynis report
 func parseKeyValue(line string) (key string, value string, err error) {
-	keyValue := strings.Split(line, "=")
-
-	if len(keyValue) != 2 {
+	key, value, found := strings.Cut(line, "=")
+	if !found {
 		return "", "", errors.New("malformed line")
 	}
 
-	key = strings.TrimSpace(keyValue[0])
-	value = strings.TrimSpace(keyValue[1])
+	key = strings.TrimSpace(key)
+	value = strings.TrimSpace(value)
 
 	return
 }
