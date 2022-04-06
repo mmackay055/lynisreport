@@ -2,6 +2,7 @@
 
 # Script for running the Lynis auditing tool and logging the report warnings
 # and suggestions to a log file that can be parsed by Elastic Cloud
+# First argument is for Lynis executable and second is for the lynisreport tool
 
 # check if root
 if [ `id -u` -ne 0 ] 
